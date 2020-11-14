@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Tuple, Union
+from typing import Any
 
 
 class DataBase:
@@ -13,14 +13,14 @@ class DataBase:
         db_connect = sqlite3.connect(name)
         return cls(name, db_connect)
 
-    def execute(self, sql_query: Union[Tuple[str], str]):
+    def execute(self, sql_query: Any):
         self.cur.execute(sql_query)
         self.db_connect.commit()
 
-    def select_all(self, sql_query: Union[Tuple[str], str]):
+    def select_all(self, sql_query: Any):
         return self.cur.execute(sql_query).fetchall()
 
-    def select_one(self, sql_query: Union[Tuple[str], str]):
+    def select_one(self, sql_query: Any):
         return self.cur.execute(sql_query).fetchone()
 
     def close(self):

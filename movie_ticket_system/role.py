@@ -45,8 +45,8 @@ class Role:
     def create_table(cls, data_base):
         request = """
             CREATE TABLE IF NOT EXISTS role (
-	            id INTEGER PRIMARY KEY,
-   	            name TEXT NOT NULL UNIQUE
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE
             );
         """
         data_base.execute(request)
