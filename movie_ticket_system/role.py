@@ -1,4 +1,5 @@
 from data_base import DataBase
+from tools.field_pair_tuple import FieldPair
 
 
 class Role:
@@ -18,20 +19,12 @@ class Role:
         """
         return self.data_base.select_all(request)
 
-    def get_by_id(self, id_: int):
-        request = """
+    def get_by_field(self, field_pair: FieldPair):
+        request = f"""
             SELECT name
             FROM role
-            WHERE id = ?
-        """, (id_,)
-        return self.data_base.select_one(request)
-
-    def get_by_name(self, name: str):
-        request = """
-            SELECT id
-            FROM role
-            WHERE name = ?
-        """, (name,)
+            WHERE {field_pair.field_name} = ?
+        """, (field_pair.field_value,)
         return self.data_base.select_one(request)
 
     def remove(self, name: str):
