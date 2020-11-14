@@ -25,9 +25,9 @@ class User:
 
     def get_all(self):
         request = """
-                    SELECT id, first_name, last_name, login
-                    FROM user
-                """
+            SELECT id, first_name, last_name, login
+            FROM user
+        """
         return self.data_base.select_all(request)
 
     def get_by_field(self, field_name: str, field_value: Any):
