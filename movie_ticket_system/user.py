@@ -17,7 +17,7 @@ class User:
         )
 
     def add(self, first_name: str, last_name: str, login: str, password: str, role: str):
-        role_id = self.role.get_by_name(role)
+        role_id, _ = self.role.get_by_field(FieldPair('name', role))
         request = """
             INSERT INTO user (first_name, last_name, login, password, role_id) VALUES(?, ?, ?, ?, ?)
         """, (first_name, last_name, login, password, role_id)

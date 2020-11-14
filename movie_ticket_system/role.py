@@ -8,7 +8,7 @@ class Role:
 
     def add(self, name: str):
         request = """
-            INSERT INTO role VALUES(?)
+            INSERT INTO role(name) VALUES(?)
         """, (name,)
         self.data_base.execute(request)
 
@@ -21,7 +21,7 @@ class Role:
 
     def get_by_field(self, field_pair: FieldPair):
         request = f"""
-            SELECT name
+            SELECT id, name
             FROM role
             WHERE {field_pair.field_name} = ?
         """, (field_pair.field_value,)
