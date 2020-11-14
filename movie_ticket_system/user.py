@@ -1,5 +1,3 @@
-from typing import Any
-
 from data_base import DataBase
 from role import Role
 from tools.field_pair_tuple import FieldPair
@@ -25,18 +23,20 @@ class User:
 
     def get_all(self):
         request = """
-            SELECT id, first_name, last_name, login
+            SELECT user.id, user.first_name, user.last_name, user.login, role.name
             FROM user
+            INNER JOIN role on role.id = user.role_id
         """
         return self.data_base.select_all(request)
 
-    def get_by_field(self, field_name: str, field_value: Any):
-        if field_name in self.user_db_fields:
+    def get_by_field(self, field_pair: FieldPair):
+        if field_pair.field_name in self.user_db_fields:
             request = f"""
-                SELECT id, first_name, last_name, login
+                SELECT user.id, user.first_name, user.last_name, user.login, role.name
                 FROM user
-                WHERE {field_name} = ?
-            """, (field_value,)
+                INNER JOIN role on role.id = user.role_id
+                WHERE user.{field_pair.field_name} = ?
+            """, (field_pair.field_value,)
             return self.data_base.select_one(request)
 
     def remove(self, login):
