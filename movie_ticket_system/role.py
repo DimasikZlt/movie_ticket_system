@@ -39,8 +39,8 @@ class Role:
         """, (name,)
         self.data_base.execute(request)
 
-    def fill_default_value(self, loader: Callable, roles_file: str):
-        for user in loader(roles_file):
+    def fill_default_value(self, loader: Callable, users_file: str):
+        for user in loader(users_file):
             role = user.get('role')
             if role:
                 self.add(role)
