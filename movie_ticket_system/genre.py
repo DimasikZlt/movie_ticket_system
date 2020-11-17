@@ -1,8 +1,13 @@
+from typing import Callable
+
 from data_base import DataBase
 from tools.field_pair_tuple import FieldPair
+from tools.yaml_loader import load_yaml
 
 
 class Genre:
+    DEFAULT_MOVIES_FILE = '../data/movies.yml'
+
     def __init__(self, data_base: DataBase):
         self.data_base = data_base
 
@@ -34,13 +39,22 @@ class Genre:
         """, (field_pair.field_value,)
         return self.data_base.select_one(request)
 
+    def fill_default_value(self, loader: Callable, movies_file: str):
+        for movie in loader(movies_file):
+            genre = movie.get('genre')
+            if genre:
+                self.add(genre)
+
     @classmethod
     def create_table(cls, data_base):
-        request = """
-            CREATE TABLE IF NOT EXISTS genre (
-                id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL UNIQUE
-            );
-        """
-        data_base.execute(request)
-        return cls(data_base)
+        genre = cls(data_base)
+        if not data_base.has_table('genre'):
+            request = """
+                CREATE TABLE IF NOT EXISTS genre (
+                    id INTEGER PRIMARY KEY,
+                    name TEXT NOT NULL UNIQUE
+                );
+            """
+            data_base.execute(request)
+            genre.fill_default_value(load_yaml, Genre.DEFAULT_MOVIES_FILE)
+        return genre
