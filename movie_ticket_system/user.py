@@ -1,9 +1,14 @@
+from typing import Callable
+
 from data_base import DataBase
 from role import Role
 from tools.field_pair_tuple import FieldPair
+from tools.yaml_loader import load_yaml
 
 
 class User:
+    DEFAULT_USERS_FILE = '../data/users.yml'
+
     def __init__(self, data_base: DataBase, role: Role):
         self.data_base = data_base
         self.role = role
@@ -57,19 +62,36 @@ class User:
             """, (field_pair.field_value, filter_field_pair.field_value)
             self.data_base.execute(request)
 
+    def update_role(self, login: str, role: str):
+        role_id, _ = self.role.get_by_field(FieldPair('name', role))
+        self.update(FieldPair('role_id', role_id), FieldPair('login', login))
+
+    def fill_default_value(self, loader: Callable, roles_file: str):
+        for user in loader(roles_file):
+            first_name = user.get('first_name')
+            last_name = user.get('last_name')
+            login = user.get('login')
+            password = user.get('password')
+            role = user.get('role')
+            if first_name and last_name and login and password:
+                self.add(first_name, last_name, login, password, role)
+
     @classmethod
     def create_table(cls, data_base):
         role = Role.create_table(data_base)
-        request = """
-            CREATE TABLE IF NOT EXISTS user (
-                id INTEGER PRIMARY KEY,
-                first_name TEXT NOT NULL,
-                last_name TEXT NOT NULL,
-                login TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                role_id INTEGER NOT NULL, 
-                FOREIGN KEY (role_id) REFERENCES role(id)
-            );
-        """
-        data_base.execute(request)
-        return cls(data_base, role)
+        user = cls(data_base, role)
+        if not data_base.has_table('user'):
+            request = """
+                CREATE TABLE user (
+                    id INTEGER PRIMARY KEY,
+                    first_name TEXT NOT NULL,
+                    last_name TEXT NOT NULL,
+                    login TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL,
+                    role_id INTEGER NOT NULL, 
+                    FOREIGN KEY (role_id) REFERENCES role(id)
+                );
+            """
+            data_base.execute(request)
+            user.fill_default_value(load_yaml, User.DEFAULT_USERS_FILE)
+        return user
