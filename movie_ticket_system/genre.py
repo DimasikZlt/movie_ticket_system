@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from typing import Callable
 
 from data_base import DataBase
@@ -15,7 +16,11 @@ class Genre:
         request = """
             INSERT INTO genre(name) VALUES(?)
         """, (name,)
-        self.data_base.execute(request)
+        try:
+            self.data_base.execute(request)
+        except IntegrityError:
+            pass
+
 
     def remove(self, name):
         request = """
@@ -40,7 +45,7 @@ class Genre:
         return self.data_base.select_one(request)
 
     def fill_default_value(self, loader: Callable, movies_file: str):
-        for movie in loader(movies_file):
+        for movie in loader(movies_file).get('movies'):
             genre = movie.get('genre')
             if genre:
                 self.add(genre)
@@ -50,7 +55,7 @@ class Genre:
         genre = cls(data_base)
         if not data_base.has_table('genre'):
             request = """
-                CREATE TABLE IF NOT EXISTS genre (
+                CREATE TABLE genre (
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL UNIQUE
                 );
