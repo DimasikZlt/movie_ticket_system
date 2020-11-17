@@ -12,18 +12,19 @@ class Movie:
             'title',
             'year',
             'description',
+            'duration',
         )
 
-    def add(self, title: str, year: int, description: str, genre: str):
+    def add(self, title: str, year: int, description: str, duration: int, genre: str):
         genre_id, _ = self.genre.get_by_field(FieldPair('name', genre))
         request = """
-            INSERT INTO movie (title, year, description, genre_id) VALUES(?, ?, ?, ?)
-        """, (title, year, description, genre_id)
+            INSERT INTO movie (title, year, description, duration, genre_id) VALUES(?, ?, ?, ?, ?)
+        """, (title, year, description, duration, genre_id)
         self.data_base.execute(request)
 
     def get_all(self):
         request = """
-            SELECT movie.id, movie.title, movie.year, movie.description, genre.name
+            SELECT movie.id, movie.title, movie.year, movie.description, movie.duration, genre.name
             FROM movie
             INNER JOIN genre on genre.id = movie.genre_id
         """
@@ -32,7 +33,13 @@ class Movie:
     def get_by_field(self, field_pair: FieldPair):
         if field_pair.field_name in self.movie_db_fields:
             request = f"""
-                SELECT movie.id, movie.title, movie.year, movie.description, genre.name
+                SELECT
+                    movie.id,
+                    movie.title,
+                    movie.year,
+                    movie.description,
+                    movie.duration, 
+                    genre.name
                 FROM movie
                 INNER JOIN genre on genre.id = movie.genre_id
                 WHERE movie.{field_pair.field_name} = ?
@@ -57,15 +64,20 @@ class Movie:
             """, (field_pair.field_value, filter_field_pair.field_value)
             self.data_base.execute(request)
 
+    def update_genre(self, title: str, genre: str):
+        genre_id, _ = self.genre.get_by_field(FieldPair('name', genre))
+        self.update(FieldPair('genre_id', genre_id), FieldPair('title', title))
+
     @classmethod
     def create_table(cls, data_base):
         genre = Genre.create_table(data_base)
         request = """
             CREATE TABLE IF NOT EXISTS movie (
                 id INTEGER PRIMARY KEY,
-                title TEXT NOT NULL,
+                title TEXT NOT NULL UNIQUE,
                 year INTEGER NOT NULL,
                 description TEXT NOT NULL,
+                duration INTEGER NOT NULL, 
                 genre_id INTEGER NOT NULL, 
                 FOREIGN KEY (genre_id) REFERENCES genre(id)
             );
