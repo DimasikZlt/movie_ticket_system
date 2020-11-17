@@ -17,6 +17,7 @@ class User:
             'first_name',
             'last_name',
             'login',
+            'role_id',
         )
 
     def add(self, first_name: str, last_name: str, login: str, password: str, role: str):
@@ -62,12 +63,12 @@ class User:
             """, (field_pair.field_value, filter_field_pair.field_value)
             self.data_base.execute(request)
 
-    def update_role(self, login: str, role: str):
+    def update_user(self, login: str, role: str):
         role_id, _ = self.role.get_by_field(FieldPair('name', role))
         self.update(FieldPair('role_id', role_id), FieldPair('login', login))
 
-    def fill_default_value(self, loader: Callable, roles_file: str):
-        for user in loader(roles_file):
+    def fill_default_value(self, loader: Callable, users_file: str):
+        for user in loader(users_file):
             first_name = user.get('first_name')
             last_name = user.get('last_name')
             login = user.get('login')
