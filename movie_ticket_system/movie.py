@@ -1,9 +1,14 @@
+from typing import Callable
+
 from data_base import DataBase
 from genre import Genre
 from tools.field_pair_tuple import FieldPair
+from tools.yaml_loader import load_yaml
 
 
 class Movie:
+    DEFAULT_MOVIES_FILE = '../data/movies.yml'
+
     def __init__(self, data_base: DataBase, genre: Genre):
         self.data_base = data_base
         self.genre = genre
@@ -13,6 +18,7 @@ class Movie:
             'year',
             'description',
             'duration',
+            'genre_id',
         )
 
     def add(self, title: str, year: int, description: str, duration: int, genre: str):
@@ -68,19 +74,32 @@ class Movie:
         genre_id, _ = self.genre.get_by_field(FieldPair('name', genre))
         self.update(FieldPair('genre_id', genre_id), FieldPair('title', title))
 
+    def fill_default_value(self, loader: Callable, movies_file: str):
+        for movie in loader(movies_file).get('movies'):
+            title = movie.get('movie_title')
+            year = movie.get('year')
+            description = movie.get('description')
+            duration = movie.get('duration')
+            genre = movie.get('genre')
+            if title and year and description and genre:
+                self.add(title, year, description, duration, genre)
+
     @classmethod
     def create_table(cls, data_base):
         genre = Genre.create_table(data_base)
-        request = """
-            CREATE TABLE IF NOT EXISTS movie (
-                id INTEGER PRIMARY KEY,
-                title TEXT NOT NULL UNIQUE,
-                year INTEGER NOT NULL,
-                description TEXT NOT NULL,
-                duration INTEGER NOT NULL, 
-                genre_id INTEGER NOT NULL, 
-                FOREIGN KEY (genre_id) REFERENCES genre(id)
-            );
-        """
-        data_base.execute(request)
-        return cls(data_base, genre)
+        movie = cls(data_base, genre)
+        if not data_base.has_table('movie'):
+            request = """
+                CREATE TABLE movie (
+                    id INTEGER PRIMARY KEY,
+                    title TEXT NOT NULL UNIQUE,
+                    year INTEGER NOT NULL,
+                    description TEXT NOT NULL,
+                    duration INTEGER NOT NULL, 
+                    genre_id INTEGER NOT NULL, 
+                    FOREIGN KEY (genre_id) REFERENCES genre(id)
+                );
+            """
+            data_base.execute(request)
+            movie.fill_default_value(load_yaml, Movie.DEFAULT_MOVIES_FILE)
+        return movie
