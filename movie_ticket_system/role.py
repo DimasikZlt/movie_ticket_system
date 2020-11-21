@@ -1,6 +1,11 @@
-from typing import Callable
+from __future__ import annotations
 
-from data_base import DataBase
+from typing import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from data_base import DataBase
+
 from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
 
@@ -39,11 +44,10 @@ class Role:
         """, (name,)
         self.data_base.execute(request)
 
-    def fill_default_value(self, loader: Callable, users_file: str):
-        for user in loader(users_file):
-            role = user.get('role')
-            if role:
-                self.add(role)
+    def load_default_value(self, loader: Callable, users_file: str):
+        roles = set(user.get('role') for user in loader(users_file) if user.get('role'))
+        for role in roles:
+            self.add(role)
 
     @classmethod
     def create_table(cls, data_base):
@@ -56,5 +60,5 @@ class Role:
                 );
             """
             data_base.execute(request)
-            role.fill_default_value(load_yaml, Role.DEFAULT_ROLES_FILE)
+            role.load_default_value(load_yaml, Role.DEFAULT_ROLES_FILE)
         return role
