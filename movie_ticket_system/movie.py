@@ -1,6 +1,11 @@
-from typing import Callable
+from __future__ import annotations
 
-from data_base import DataBase
+from typing import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from data_base import DataBase
+
 from genre import Genre
 from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
