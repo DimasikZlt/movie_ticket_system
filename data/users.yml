@@ -8,6 +8,11 @@
   last_name:  l
   password:   Qwerty123
   role:       Operator
+- login: sasha_l
+  first_name: Sasha
+  last_name: l
+  password: Qwerty123
+  role: Operator
 - login:      _oleg_
   first_name: Oleg
   last_name:  Joker
