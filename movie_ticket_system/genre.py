@@ -1,7 +1,11 @@
-from sqlite3 import IntegrityError
-from typing import Callable
+from __future__ import annotations
 
-from data_base import DataBase
+from typing import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from data_base import DataBase
+
 from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
 
@@ -16,11 +20,7 @@ class Genre:
         request = """
             INSERT INTO genre(name) VALUES(?)
         """, (name,)
-        try:
-            self.data_base.execute(request)
-        except IntegrityError:
-            pass
-
+        self.data_base.execute(request)
 
     def remove(self, name):
         request = """
@@ -44,11 +44,14 @@ class Genre:
         """, (field_pair.field_value,)
         return self.data_base.select_one(request)
 
-    def fill_default_value(self, loader: Callable, movies_file: str):
-        for movie in loader(movies_file).get('movies'):
-            genre = movie.get('genre')
-            if genre:
-                self.add(genre)
+    def load_default_value(self, loader: Callable, movies_file: str):
+        genres = set(
+            movie.get('genre')
+            for movie in loader(movies_file).get('movies')
+            if movie.get('genre')
+        )
+        for genre in genres:
+            self.add(genre)
 
     @classmethod
     def create_table(cls, data_base):
@@ -61,5 +64,5 @@ class Genre:
                 );
             """
             data_base.execute(request)
-            genre.fill_default_value(load_yaml, Genre.DEFAULT_MOVIES_FILE)
+            genre.load_default_value(load_yaml, Genre.DEFAULT_MOVIES_FILE)
         return genre
