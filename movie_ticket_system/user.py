@@ -72,7 +72,7 @@ class User:
         role_id, _ = self.role.get_by_field(FieldPair('name', role))
         self.update(FieldPair('role_id', role_id), FieldPair('login', login))
 
-    def fill_default_value(self, loader: Callable, users_file: str):
+    def load_default_value(self, loader: Callable, users_file: str):
         for user in loader(users_file):
             first_name = user.get('first_name')
             last_name = user.get('last_name')
@@ -83,8 +83,7 @@ class User:
                 self.add(first_name, last_name, login, password, role)
 
     @classmethod
-    def create_table(cls, data_base):
-        role = Role.create_table(data_base)
+    def create_table(cls, data_base, role):
         user = cls(data_base, role)
         if not data_base.has_table('user'):
             request = """
@@ -94,10 +93,9 @@ class User:
                     last_name TEXT NOT NULL,
                     login TEXT NOT NULL UNIQUE,
                     password TEXT NOT NULL,
-                    role_id INTEGER NOT NULL, 
-                    FOREIGN KEY (role_id) REFERENCES role(id)
+                    role_id INTEGER NOT NULL REFERENCES role(id)
                 );
             """
             data_base.execute(request)
-            user.fill_default_value(load_yaml, User.DEFAULT_USERS_FILE)
+            user.load_default_value(load_yaml, User.DEFAULT_USERS_FILE)
         return user
