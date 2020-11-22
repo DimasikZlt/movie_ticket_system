@@ -79,7 +79,7 @@ class Movie:
         genre_id, _ = self.genre.get_by_field(FieldPair('name', genre))
         self.update(FieldPair('genre_id', genre_id), FieldPair('title', title))
 
-    def fill_default_value(self, loader: Callable, movies_file: str):
+    def load_default_value(self, loader: Callable, movies_file: str):
         for movie in loader(movies_file).get('movies'):
             title = movie.get('movie_title')
             year = movie.get('year')
@@ -90,8 +90,7 @@ class Movie:
                 self.add(title, year, description, duration, genre)
 
     @classmethod
-    def create_table(cls, data_base):
-        genre = Genre.create_table(data_base)
+    def create_table(cls, data_base, genre):
         movie = cls(data_base, genre)
         if not data_base.has_table('movie'):
             request = """
@@ -101,10 +100,9 @@ class Movie:
                     year INTEGER NOT NULL,
                     description TEXT NOT NULL,
                     duration INTEGER NOT NULL, 
-                    genre_id INTEGER NOT NULL, 
-                    FOREIGN KEY (genre_id) REFERENCES genre(id)
+                    genre_id INTEGER NOT NULL REFERENCES genre(id)
                 );
             """
             data_base.execute(request)
-            movie.fill_default_value(load_yaml, Movie.DEFAULT_MOVIES_FILE)
+            movie.load_default_value(load_yaml, Movie.DEFAULT_MOVIES_FILE)
         return movie
