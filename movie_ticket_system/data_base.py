@@ -1,8 +1,11 @@
 import sqlite3
 from typing import Any
 
+from genre import Genre
 from movie import Movie
 from movie_hall import MovieHall
+from role import Role
+from session import Session
 from user import User
 
 
@@ -11,9 +14,12 @@ class DataBase:
         self.name = name
         self.db_connect = db_connect
         self.cur = db_connect.cursor()
+        self.role = None
         self.user = None
+        self.genre = None
         self.movie = None
         self.movie_hall = None
+        self.session = None
 
     @classmethod
     def connect(cls, name: str):
@@ -52,6 +58,9 @@ class DataBase:
         self.db_connect.close()
 
     def create_tables(self):
-        self.user = User.create_table(self)
-        self.movie = Movie.create_table(self)
+        self.role = Role.create_table(self)
+        self.user = User.create_table(self, self.role)
+        self.genre = Genre.create_table(self)
+        self.movie = Movie.create_table(self, self.genre)
         self.movie_hall = MovieHall.create_table(self)
+        self.session = Session.create_table(self, self.movie, self.movie_hall)
