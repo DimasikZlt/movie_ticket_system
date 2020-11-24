@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Callable
 from typing import TYPE_CHECKING
 
+from table import Table
+
 if TYPE_CHECKING:
     from data_base import DataBase
 
@@ -11,51 +13,47 @@ from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
 
 
-class User:
+class User(Table):
     DEFAULT_USERS_FILE = '../data/users.yml'
-
-    def __init__(self, data_base: DataBase, role: Role):
-        self.data_base = data_base
-        self.role = role
-        self.user_db_fields = (
-            'id',
-            'first_name',
-            'last_name',
-            'login',
-            'role_id',
-        )
+    user_db_fields = (
+        'id',
+        'first_name',
+        'last_name',
+        'login',
+        'role_id',
+    )
 
     def add(self, first_name: str, last_name: str, login: str, password: str, role: str):
-        role_id, _ = self.role.get_by_field(FieldPair('name', role))
+        role_id, _ = super().get_by_field('role', FieldPair('name', role))
         request = """
             INSERT INTO user (first_name, last_name, login, password, role_id) VALUES(?, ?, ?, ?, ?)
         """, (first_name, last_name, login, password, role_id)
-        self.data_base.execute(request)
+        self.execute(request)
 
-    def get_all(self):
-        request = """
+    def get_all(self, name):
+        request = f"""
             SELECT user.id, user.first_name, user.last_name, user.login, role.name
-            FROM user
+            FROM {name}
             INNER JOIN role on role.id = user.role_id
         """
-        return self.data_base.select_all(request)
+        return self.select_all(request)
 
-    def get_by_field(self, field_pair: FieldPair):
+    def get_by_field(self, name: str, field_pair: FieldPair):
         if field_pair.field_name in self.user_db_fields:
             request = f"""
                 SELECT user.id, user.first_name, user.last_name, user.login, role.name
-                FROM user
+                FROM {name}
                 INNER JOIN role on role.id = user.role_id
                 WHERE user.{field_pair.field_name} = ?
             """, (field_pair.field_value,)
-            return self.data_base.select_one(request)
+            return self.select_one(request)
 
     def remove(self, login):
         request = """
             DELETE FROM user
             WHERE login = ?
         """, (login,)
-        self.data_base.execute(request)
+        self.execute(request)
 
     def update(self, field_pair: FieldPair, filter_field_pair: FieldPair):
         if (field_pair.field_name != 'id'
@@ -66,10 +64,10 @@ class User:
                 SET {field_pair.field_name} = ?
                 WHERE {filter_field_pair.field_name} = ? 
             """, (field_pair.field_value, filter_field_pair.field_value)
-            self.data_base.execute(request)
+            self.execute(request)
 
     def update_user(self, login: str, role: str):
-        role_id, _ = self.role.get_by_field(FieldPair('name', role))
+        role_id, _ = super().get_by_field('role', FieldPair('name', role))
         self.update(FieldPair('role_id', role_id), FieldPair('login', login))
 
     def load_default_value(self, loader: Callable, users_file: str):
@@ -83,9 +81,9 @@ class User:
                 self.add(first_name, last_name, login, password, role)
 
     @classmethod
-    def create_table(cls, data_base, role):
-        user = cls(data_base, role)
-        if not data_base.has_table('user'):
+    def create_table(cls):
+        user = cls()
+        if not user.has_table('user'):
             request = """
                 CREATE TABLE user (
                     id INTEGER PRIMARY KEY,
@@ -96,6 +94,6 @@ class User:
                     role_id INTEGER NOT NULL REFERENCES role(id)
                 );
             """
-            data_base.execute(request)
+            user.execute(request)
             user.load_default_value(load_yaml, User.DEFAULT_USERS_FILE)
         return user
