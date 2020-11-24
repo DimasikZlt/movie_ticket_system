@@ -21,9 +21,11 @@ class Ticket:
         request = """
             CREATE TABLE ticket (
                 id INTEGER PRIMARY KEY,
+                session_id INTEGER NOT NULL REFERENCES session(id),
                 row INTEGER NOT NULL,
                 seat INTEGER NOT NULL,
-                price INTEGER NOT NULL 
+                movie_hall_id INTEGER NOT NULL REFERENCES movie_hall(id),
+                price INTEGER NOT NULL
             );
         """
         data_base.execute(request)
