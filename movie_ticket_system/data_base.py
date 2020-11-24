@@ -1,32 +1,18 @@
 import sqlite3
 from typing import Any
 
-from genre import Genre
-from movie import Movie
-from movie_hall import MovieHall
-from role import Role
-from session import Session
-from user import User
-
 
 class DataBase:
-    def __init__(self, name: str, db_connect):
-        self.name = name
-        self.db_connect = db_connect
-        self.cur = db_connect.cursor()
-        self.role = None
-        self.user = None
-        self.genre = None
-        self.movie = None
-        self.movie_hall = None
-        self.session = None
+    name = None
+    db_connect = None
+    cur = None
 
     @classmethod
     def connect(cls, name: str):
-        db_connect = sqlite3.connect(name)
-        db = cls(name, db_connect)
-        db.create_tables()
-        return db
+        DataBase.name = name
+        DataBase.db_connect = sqlite3.connect(name)
+        DataBase.cur = DataBase.db_connect.cursor()
+        return cls()
 
     def execute(self, sql_query: Any):
         if isinstance(sql_query, tuple):
@@ -56,11 +42,3 @@ class DataBase:
 
     def close(self):
         self.db_connect.close()
-
-    def create_tables(self):
-        self.role = Role.create_table(self)
-        self.user = User.create_table(self, self.role)
-        self.genre = Genre.create_table(self)
-        self.movie = Movie.create_table(self, self.genre)
-        self.movie_hall = MovieHall.create_table(self)
-        self.session = Session.create_table(self, self.movie, self.movie_hall)
