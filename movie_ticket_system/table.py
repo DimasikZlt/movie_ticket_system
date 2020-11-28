@@ -4,8 +4,9 @@ from abc import ABCMeta, abstractmethod
 
 
 class Table(metaclass=ABCMeta):
-    DB_PATH = '../data/movie_ticket_system.sqlite'
-    DB_CURSOR = DataBase.connect(DB_PATH)
+
+    def __init__(self, db: DataBase):
+        self.data_base = db
 
     @abstractmethod
     def add(self, name: str):
@@ -20,7 +21,7 @@ class Table(metaclass=ABCMeta):
             SELECT *
             FROM {name}
         """
-        return Table.DB_CURSOR.select_all(request)
+        return self.data_base.select_all(request)
 
     def get_by_field(self, name: str, field_pair: FieldPair):
         request = f"""
@@ -28,4 +29,4 @@ class Table(metaclass=ABCMeta):
             FROM {name}
             WHERE {field_pair.field_name} = ?
         """, (field_pair.field_value,)
-        return Table.DB_CURSOR.select_one(request)
+        return self.data_base.select_one(request)
