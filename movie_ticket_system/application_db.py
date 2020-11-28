@@ -1,12 +1,13 @@
 from typing import List
 
-from genre import Genre
-from movie import Movie
-from movie_hall import MovieHall
-from role import Role
-from session import Session
+from data_base import DataBase
+from genre_table import GenreTable
+from movie_table import MovieTable
+from movie_hall_table import MovieHallTable
+from role_table import RoleTable
+from session_table import SessionTable
 from table import Table
-from user import User
+from user_table import UserTable
 
 
 class ApplicationDB:
@@ -20,10 +21,12 @@ class ApplicationDB:
 
     @classmethod
     def create_tables(cls):
+        db_path = '../data/movie_ticket_system.sqlite'
+        data_base = DataBase.connect(db_path)
         app_db = cls([])
-        app_db.genre = Genre.create_table()
-        app_db.role = Role.create_table()
-        app_db.user = User.create_table()
-        # app_db.movie = Movie.create_table()
-        # app_db.movie_hall = MovieHall.create_table()
-        # app_db.session = Session.create_table()
+        app_db.genre = GenreTable.create_table(data_base)
+        app_db.role = RoleTable.create_table(data_base)
+        app_db.user = UserTable.create_table(data_base)
+        app_db.movie = MovieTable.create_table(data_base)
+        app_db.movie_hall = MovieHallTable.create_table(data_base)
+        app_db.session = SessionTable.create_table(data_base)
