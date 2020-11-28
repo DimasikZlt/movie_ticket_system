@@ -1,19 +1,18 @@
 from typing import Callable
 
+from data_base import DataBase
 from table import Table
-
-from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
 
 
-class Role(Table):
+class RoleTable(Table):
     DEFAULT_ROLES_FILE = '../data/users.yml'
 
     def add(self, name: str):
         request = """
             INSERT INTO role(name) VALUES(?)
         """, (name,)
-        self.execute(request)
+        self.data_base.execute(request)
 
     def remove(self, name: str):
         request = """
@@ -28,15 +27,15 @@ class Role(Table):
             self.add(role)
 
     @classmethod
-    def create_table(cls):
-        role = cls()
-        if not role.has_table('role'):
+    def create_table(cls, data_base: DataBase):
+        role = cls(data_base)
+        if not data_base.has_table('role'):
             request = """
                 CREATE TABLE role (
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL UNIQUE
                 );
             """
-            role.execute(request)
-            role.load_default_value(load_yaml, Role.DEFAULT_ROLES_FILE)
+            data_base.execute(request)
+            role.load_default_value(load_yaml, RoleTable.DEFAULT_ROLES_FILE)
         return role
