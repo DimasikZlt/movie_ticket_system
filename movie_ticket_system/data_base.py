@@ -8,10 +8,6 @@ class DataBase:
         self.db_connect = sqlite3.connect(name)
         self.cur = self.db_connect.cursor()
 
-    @classmethod
-    def connect(cls, name: str):
-        return cls(name)
-
     def execute(self, sql_query: Any):
         if isinstance(sql_query, tuple):
             self.cur.execute(*sql_query)
@@ -40,3 +36,7 @@ class DataBase:
 
     def close(self):
         self.db_connect.close()
+
+    @classmethod
+    def connect(cls, name: str):
+        return cls(name)
