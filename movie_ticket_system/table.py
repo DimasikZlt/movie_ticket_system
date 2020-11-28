@@ -8,14 +8,6 @@ class Table(metaclass=ABCMeta):
     def __init__(self, db: DataBase):
         self.data_base = db
 
-    @abstractmethod
-    def add(self, name: str):
-        raise NotImplemented
-
-    @abstractmethod
-    def remove(self, name: str):
-        raise NotImplemented
-
     def get_all(self, name: str):
         request = f"""
             SELECT *
