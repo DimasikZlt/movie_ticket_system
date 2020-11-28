@@ -8,11 +8,11 @@ class Table(metaclass=ABCMeta):
     DB_CURSOR = DataBase.connect(DB_PATH)
 
     @abstractmethod
-    def add(self):
+    def add(self, name: str):
         raise NotImplemented
 
     @abstractmethod
-    def remove(self):
+    def remove(self, name: str):
         raise NotImplemented
 
     def get_all(self, name: str):
