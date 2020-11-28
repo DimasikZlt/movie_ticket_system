@@ -1,22 +1,14 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
+from table import Table
 from tools.field_pair_tuple import FieldPair
 
-if TYPE_CHECKING:
-    from data_base import DataBase
 
-
-class MovieHall:
-    def __init__(self, data_base: DataBase):
-        self.data_base = data_base
-        self.movie_hall_db_fields = (
-            'id',
-            'name',
-            'rows_count',
-            'seats_count'
-        )
+class MovieHallTable(Table):
+    movie_hall_db_fields = (
+        'id',
+        'name',
+        'rows_count',
+        'seats_count',
+    )
 
     def add(self, name: str, rows_count: int, seats_count: int):
         request = """
@@ -31,18 +23,18 @@ class MovieHall:
         """, (name,)
         self.data_base.execute(request)
 
-    def get_all(self):
-        request = """
+    def get_all(self, table_name: str):
+        request = f"""
             SELECT id, name, rows_count, seats_count
-            FROM movie_hall
+            FROM {table_name}
         """
         return self.data_base.select_all(request)
 
-    def get_by_field(self, field_pair: FieldPair):
+    def get_by_field(self, table_name: str, field_pair: FieldPair):
         if field_pair.field_name in self.movie_hall_db_fields:
             request = f"""
                 SELECT id, name, rows_count, seats_count
-                FROM movie_hall
+                FROM {table_name}
                 WHERE movie_hall.{field_pair.field_name} = ?
             """, (field_pair.field_value,)
             return self.data_base.select_one(request)
