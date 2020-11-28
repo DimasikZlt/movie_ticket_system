@@ -1,11 +1,12 @@
 from typing import Callable
 
+from data_base import DataBase
 from table import Table
 from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
 
 
-class User(Table):
+class UserTable(Table):
     DEFAULT_USERS_FILE = '../data/users.yml'
     user_db_fields = (
         'id',
@@ -19,8 +20,8 @@ class User(Table):
         role_id, _ = super().get_by_field('role', FieldPair('name', role))
         request = """
             INSERT INTO user (first_name, last_name, login, password, role_id) VALUES(?, ?, ?, ?, ?)
-        """, (first_name, last_name, login, password, role_id)
-        self.execute(request)
+        """, (first_name, last_name, login, hash(password), role_id)
+        self.data_base.execute(request)
 
     def get_all(self, name):
         request = f"""
@@ -28,7 +29,7 @@ class User(Table):
             FROM {name}
             INNER JOIN role on role.id = user.role_id
         """
-        return self.select_all(request)
+        return self.data_base.select_all(request)
 
     def get_by_field(self, name: str, field_pair: FieldPair):
         if field_pair.field_name in self.user_db_fields:
@@ -38,14 +39,14 @@ class User(Table):
                 INNER JOIN role on role.id = user.role_id
                 WHERE user.{field_pair.field_name} = ?
             """, (field_pair.field_value,)
-            return self.select_one(request)
+            return self.data_base.select_one(request)
 
     def remove(self, login):
         request = """
             DELETE FROM user
             WHERE login = ?
         """, (login,)
-        self.execute(request)
+        self.data_base.execute(request)
 
     def update(self, field_pair: FieldPair, filter_field_pair: FieldPair):
         if (field_pair.field_name != 'id'
@@ -56,7 +57,7 @@ class User(Table):
                 SET {field_pair.field_name} = ?
                 WHERE {filter_field_pair.field_name} = ? 
             """, (field_pair.field_value, filter_field_pair.field_value)
-            self.execute(request)
+            self.data_base.execute(request)
 
     def update_user(self, login: str, role: str):
         role_id, _ = super().get_by_field('role', FieldPair('name', role))
@@ -73,9 +74,9 @@ class User(Table):
                 self.add(first_name, last_name, login, password, role)
 
     @classmethod
-    def create_table(cls):
-        user = cls()
-        if not user.has_table('user'):
+    def create_table(cls, data_base: DataBase):
+        user = cls(data_base)
+        if not data_base.has_table('user'):
             request = """
                 CREATE TABLE user (
                     id INTEGER PRIMARY KEY,
@@ -86,6 +87,6 @@ class User(Table):
                     role_id INTEGER NOT NULL REFERENCES role(id)
                 );
             """
-            user.execute(request)
-            user.load_default_value(load_yaml, User.DEFAULT_USERS_FILE)
+            data_base.execute(request)
+            user.load_default_value(load_yaml, UserTable.DEFAULT_USERS_FILE)
         return user
