@@ -3,16 +3,14 @@ from typing import Any
 
 
 class DataBase:
-    name = None
-    db_connect = None
-    cur = None
+    def __init__(self, name: str):
+        self.name = name
+        self.db_connect = sqlite3.connect(name)
+        self.cur = self.db_connect.cursor()
 
     @classmethod
     def connect(cls, name: str):
-        DataBase.name = name
-        DataBase.db_connect = sqlite3.connect(name)
-        DataBase.cur = DataBase.db_connect.cursor()
-        return cls()
+        return cls(name)
 
     def execute(self, sql_query: Any):
         if isinstance(sql_query, tuple):
