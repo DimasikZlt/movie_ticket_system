@@ -23,19 +23,19 @@ class UserTable(Table):
         """, (first_name, last_name, login, hash(password), role_id)
         self.data_base.execute(request)
 
-    def get_all(self, name):
+    def get_all(self, table_name: str):
         request = f"""
             SELECT user.id, user.first_name, user.last_name, user.login, role.name
-            FROM {name}
+            FROM {table_name}
             INNER JOIN role on role.id = user.role_id
         """
         return self.data_base.select_all(request)
 
-    def get_by_field(self, name: str, field_pair: FieldPair):
+    def get_by_field(self, table_name: str, field_pair: FieldPair):
         if field_pair.field_name in self.user_db_fields:
             request = f"""
                 SELECT user.id, user.first_name, user.last_name, user.login, role.name
-                FROM {name}
+                FROM {table_name}
                 INNER JOIN role on role.id = user.role_id
                 WHERE user.{field_pair.field_name} = ?
             """, (field_pair.field_value,)
