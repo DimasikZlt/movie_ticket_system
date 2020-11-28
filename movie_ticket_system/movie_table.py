@@ -3,45 +3,43 @@ from __future__ import annotations
 from typing import Callable
 from typing import TYPE_CHECKING
 
+from table import Table
+
 if TYPE_CHECKING:
     from data_base import DataBase
 
-from genre import Genre
+from genre_table import GenreTable
 from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
 
 
-class Movie:
+class MovieTable(Table):
     DEFAULT_MOVIES_FILE = '../data/movies.yml'
-
-    def __init__(self, data_base: DataBase, genre: Genre):
-        self.data_base = data_base
-        self.genre = genre
-        self.movie_db_fields = (
-            'id',
-            'title',
-            'year',
-            'description',
-            'duration',
-            'genre_id',
-        )
+    movie_db_fields = (
+        'id',
+        'title',
+        'year',
+        'description',
+        'duration',
+        'genre_id',
+    )
 
     def add(self, title: str, year: int, description: str, duration: int, genre: str):
-        genre_id, _ = self.genre.get_by_field(FieldPair('name', genre))
+        genre_id, _ = super().get_by_field('genre', FieldPair('name', genre))
         request = """
             INSERT INTO movie (title, year, description, duration, genre_id) VALUES(?, ?, ?, ?, ?)
         """, (title, year, description, duration, genre_id)
         self.data_base.execute(request)
 
-    def get_all(self):
-        request = """
+    def get_all(self, table_name: str):
+        request = f"""
             SELECT movie.id, movie.title, movie.year, movie.description, movie.duration, genre.name
-            FROM movie
+            FROM {table_name}
             INNER JOIN genre on genre.id = movie.genre_id
         """
         return self.data_base.select_all(request)
 
-    def get_by_field(self, field_pair: FieldPair):
+    def get_by_field(self, table_name, field_pair: FieldPair):
         if field_pair.field_name in self.movie_db_fields:
             request = f"""
                 SELECT
@@ -51,7 +49,7 @@ class Movie:
                     movie.description,
                     movie.duration, 
                     genre.name
-                FROM movie
+                FROM {table_name}
                 INNER JOIN genre on genre.id = movie.genre_id
                 WHERE movie.{field_pair.field_name} = ?
             """, (field_pair.field_value,)
@@ -76,7 +74,7 @@ class Movie:
             self.data_base.execute(request)
 
     def update_genre(self, title: str, genre: str):
-        genre_id, _ = self.genre.get_by_field(FieldPair('name', genre))
+        genre_id, _ = super().get_by_field('genre', FieldPair('name', genre))
         self.update(FieldPair('genre_id', genre_id), FieldPair('title', title))
 
     def load_default_value(self, loader: Callable, movies_file: str):
@@ -90,8 +88,8 @@ class Movie:
                 self.add(title, year, description, duration, genre)
 
     @classmethod
-    def create_table(cls, data_base, genre):
-        movie = cls(data_base, genre)
+    def create_table(cls, data_base):
+        movie = cls(data_base)
         if not data_base.has_table('movie'):
             request = """
                 CREATE TABLE movie (
@@ -104,5 +102,5 @@ class Movie:
                 );
             """
             data_base.execute(request)
-            movie.load_default_value(load_yaml, Movie.DEFAULT_MOVIES_FILE)
+            movie.load_default_value(load_yaml, MovieTable.DEFAULT_MOVIES_FILE)
         return movie
