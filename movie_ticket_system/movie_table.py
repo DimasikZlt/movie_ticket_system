@@ -80,9 +80,9 @@ class MovieTable(Table):
                 self.add(title, year, description, duration, genre)
 
     @classmethod
-    def create_table(cls, data_base):
-        movie = cls(data_base)
-        if not data_base.has_table('movie'):
+    def create_table(cls):
+        movie = cls()
+        if not movie.data_base.has_table('movie'):
             request = """
                 CREATE TABLE movie (
                     id INTEGER PRIMARY KEY,
@@ -93,6 +93,6 @@ class MovieTable(Table):
                     genre_id INTEGER NOT NULL REFERENCES genre(id)
                 );
             """
-            data_base.execute(request)
+            movie.data_base.execute(request)
             movie.load_default_value(load_yaml, MovieTable.DEFAULT_MOVIES_FILE)
         return movie

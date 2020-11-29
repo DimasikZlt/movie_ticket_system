@@ -40,9 +40,9 @@ class MovieHallTable(Table):
             return self.data_base.select_one(request)
 
     @classmethod
-    def create_table(cls, data_base):
-        movie_hall = cls(data_base)
-        if not data_base.has_table('movie_hall'):
+    def create_table(cls):
+        movie_hall = cls()
+        if not movie_hall.data_base.has_table('movie_hall'):
             request = """
                 CREATE TABLE movie_hall (
                     id INTEGER PRIMARY KEY,
@@ -51,6 +51,6 @@ class MovieHallTable(Table):
                     seats_count INTEGER NOT NULL
                 );
             """
-            data_base.execute(request)
+            movie_hall.data_base.execute(request)
             movie_hall.add('king', 7, 10)
         return movie_hall

@@ -1,6 +1,5 @@
 from typing import Callable
 
-from data_base import DataBase
 from table import Table
 from tools.field_pair_tuple import FieldPair
 from tools.yaml_loader import load_yaml
@@ -74,9 +73,9 @@ class UserTable(Table):
                 self.add(first_name, last_name, login, password, role)
 
     @classmethod
-    def create_table(cls, data_base: DataBase):
-        user = cls(data_base)
-        if not data_base.has_table('user'):
+    def create_table(cls):
+        user = cls()
+        if not user.data_base.has_table('user'):
             request = """
                 CREATE TABLE user (
                     id INTEGER PRIMARY KEY,
@@ -87,6 +86,6 @@ class UserTable(Table):
                     role_id INTEGER NOT NULL REFERENCES role(id)
                 );
             """
-            data_base.execute(request)
+            user.data_base.execute(request)
             user.load_default_value(load_yaml, UserTable.DEFAULT_USERS_FILE)
         return user

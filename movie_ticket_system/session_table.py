@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from data_base import DataBase
 from table import Table
 from tools.field_pair_tuple import FieldPair
 
@@ -57,9 +56,9 @@ class SessionTable(Table):
             return self.data_base.select_one(request)
 
     @classmethod
-    def create_table(cls, data_base: DataBase):
-        session = cls(data_base)
-        if not data_base.has_table('session'):
+    def create_table(cls):
+        session = cls()
+        if not session.data_base.has_table('session'):
             request = """
                 CREATE TABLE session (
                     id INTEGER PRIMARY KEY,
@@ -69,5 +68,5 @@ class SessionTable(Table):
                     movie_title_id INTEGER REFERENCES movie(id)
                 );
             """
-            data_base.execute(request)
+            session.data_base.execute(request)
         return session
