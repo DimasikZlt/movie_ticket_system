@@ -11,22 +11,10 @@ from user_table import UserTable
 
 
 class ApplicationDB:
-    def __init__(self, tables: List[Table]):
-        self.genre = None
-        self.role = None
-        self.user = None
-        self.movie = None
-        self.movie_hall = None
-        self.session = None
-
-    @classmethod
-    def create_tables(cls):
-        db_path = '../data/movie_ticket_system.sqlite'
-        data_base = DataBase.connect(db_path)
-        app_db = cls([])
-        app_db.genre = GenreTable.create_table(data_base)
-        app_db.role = RoleTable.create_table(data_base)
-        app_db.user = UserTable.create_table(data_base)
-        app_db.movie = MovieTable.create_table(data_base)
-        app_db.movie_hall = MovieHallTable.create_table(data_base)
-        app_db.session = SessionTable.create_table(data_base)
+    def __init__(self):
+        self.genre = GenreTable.create_table()
+        self.role = RoleTable.create_table()
+        self.user = UserTable.create_table()
+        self.movie = MovieTable.create_table()
+        self.movie_hall = MovieHallTable.create_table()
+        self.session = SessionTable.create_table()
