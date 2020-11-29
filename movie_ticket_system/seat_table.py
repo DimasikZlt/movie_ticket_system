@@ -1,8 +1,7 @@
-from row_table import RowTable
-from tools.field_pair_tuple import FieldPair
+from table import Table
 
 
-class SeatTable(RowTable):
+class SeatTable(Table):
     def add(self, row_id: int, seat_number: int):
         request = """
             INSERT INTO seat(row_id, seat_number) VALUES(?, ?)
@@ -17,14 +16,9 @@ class SeatTable(RowTable):
         """, (row_id, seat_number)
         self.data_base.execute(request)
 
-    def fill_seats(self):
-        movie_halls = self.get_all('movie_hall')
-        for _, name, rows_count, seats_count in movie_halls:
-            for row_number in range(1, rows_count + 1):
-                super().add(name, row_number)
-                row_id, *_ = self.get_by_field('row', FieldPair('row_number', row_number))
-                for seat_number in range(1, seats_count + 1):
-                    self.add(row_id, seat_number)
+    def fill_seats(self, row_id: int, seats_count: int):
+        for seat_number in range(1, seats_count + 1):
+            self.add(row_id, seat_number)
 
     @classmethod
     def create_table(cls):
@@ -38,5 +32,4 @@ class SeatTable(RowTable):
                 );
             """
             seat.data_base.execute(request)
-            seat.fill_seats()
         return seat
