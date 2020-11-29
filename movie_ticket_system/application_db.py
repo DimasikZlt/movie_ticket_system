@@ -1,12 +1,8 @@
-from typing import List
-
-from data_base import DataBase
 from genre_table import GenreTable
-from movie_table import MovieTable
 from movie_hall_table import MovieHallTable
+from movie_table import MovieTable
 from role_table import RoleTable
 from session_table import SessionTable
-from table import Table
 from user_table import UserTable
 
 
