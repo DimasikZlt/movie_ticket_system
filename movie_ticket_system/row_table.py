@@ -39,5 +39,5 @@ class RowTable(Table):
                 );
             """
             row.data_base.execute(request)
-            row.fill_rows()
+            # row.fill_rows()
         return row
