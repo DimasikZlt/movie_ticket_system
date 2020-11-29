@@ -18,5 +18,7 @@ class ApplicationDB:
         self.movie_hall = MovieHallTable.create_table()
         self.session = SessionTable.create_table()
         self.row = RowTable.create_table()
-        self.seat = SeatTable.create_table()
         self.ticket = TicketTable.create_table()
+
+    def close(self):
+        self.session.data_base.close()
