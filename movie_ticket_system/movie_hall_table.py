@@ -45,7 +45,7 @@ class MovieHallTable(Table):
         if not movie_hall.data_base.has_table('movie_hall'):
             request = """
                 CREATE TABLE movie_hall (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE,
                     rows_count INTEGER NOT NULL,
                     seats_count INTEGER NOT NULL

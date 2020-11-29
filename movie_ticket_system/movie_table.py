@@ -85,7 +85,7 @@ class MovieTable(Table):
         if not movie.data_base.has_table('movie'):
             request = """
                 CREATE TABLE movie (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL UNIQUE,
                     year INTEGER NOT NULL,
                     description TEXT NOT NULL,

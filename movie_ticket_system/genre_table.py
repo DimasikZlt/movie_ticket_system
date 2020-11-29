@@ -35,7 +35,7 @@ class GenreTable(Table):
         if not genre.data_base.has_table('genre'):
             request = """
                 CREATE TABLE genre (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE
                 );
             """

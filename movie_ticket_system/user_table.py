@@ -78,7 +78,7 @@ class UserTable(Table):
         if not user.data_base.has_table('user'):
             request = """
                 CREATE TABLE user (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     first_name TEXT NOT NULL,
                     last_name TEXT NOT NULL,
                     login TEXT NOT NULL UNIQUE,

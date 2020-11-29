@@ -31,7 +31,7 @@ class RoleTable(Table):
         if not role.data_base.has_table('role'):
             request = """
                 CREATE TABLE role (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE
                 );
             """

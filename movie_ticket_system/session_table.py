@@ -61,11 +61,11 @@ class SessionTable(Table):
         if not session.data_base.has_table('session'):
             request = """
                 CREATE TABLE session (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     date TEXT NOT NULL,
                     time TEXT NOT NULL,
-                    movie_hall_id INTEGER REFERENCES movie_hall(id),
-                    movie_title_id INTEGER REFERENCES movie(id)
+                    movie_hall_id INTEGER NOT NULL REFERENCES movie_hall(id),
+                    movie_title_id INTEGER NOT NULL REFERENCES movie(id)
                 );
             """
             session.data_base.execute(request)

@@ -20,12 +20,10 @@ class Ticket:
     def create_table(cls, data_base: DataBase):
         request = """
             CREATE TABLE ticket (
-                id INTEGER PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_id INTEGER NOT NULL REFERENCES session(id),
-                row INTEGER NOT NULL,
-                seat INTEGER NOT NULL,
-                movie_hall_id INTEGER NOT NULL REFERENCES movie_hall(id),
-                price INTEGER NOT NULL
+                row_id INTEGER NOT NULL,
+                seat_id INTEGER NOT NULL
             );
         """
         data_base.execute(request)
