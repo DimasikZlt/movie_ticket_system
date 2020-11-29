@@ -31,15 +31,15 @@ class GenreTable(Table):
             self.add(genre)
 
     @classmethod
-    def create_table(cls, data_base: DataBase):
-        genre = cls(data_base)
-        if not data_base.has_table('genre'):
+    def create_table(cls):
+        genre = cls()
+        if not genre.data_base.has_table('genre'):
             request = """
                 CREATE TABLE genre (
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL UNIQUE
                 );
             """
-            data_base.execute(request)
+            genre.data_base.execute(request)
             genre.load_default_value(load_yaml, GenreTable.DEFAULT_MOVIES_FILE)
         return genre
