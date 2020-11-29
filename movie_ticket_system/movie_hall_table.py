@@ -52,5 +52,6 @@ class MovieHallTable(Table):
                 );
             """
             movie_hall.data_base.execute(request)
-            movie_hall.add('king', 7, 10)
+            movie_hall.add('king', 5, 8)
+            movie_hall.add('queen', 4, 7)
         return movie_hall
