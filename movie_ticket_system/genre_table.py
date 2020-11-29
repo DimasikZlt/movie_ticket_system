@@ -1,6 +1,5 @@
 from typing import Callable
 
-from data_base import DataBase
 from table import Table
 from tools.yaml_loader import load_yaml
 

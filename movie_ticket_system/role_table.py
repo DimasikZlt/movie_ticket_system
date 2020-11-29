@@ -1,6 +1,5 @@
 from typing import Callable
 
-from data_base import DataBase
 from table import Table
 from tools.yaml_loader import load_yaml
 
@@ -27,15 +26,15 @@ class RoleTable(Table):
             self.add(role)
 
     @classmethod
-    def create_table(cls, data_base: DataBase):
-        role = cls(data_base)
-        if not data_base.has_table('role'):
+    def create_table(cls):
+        role = cls()
+        if not role.data_base.has_table('role'):
             request = """
                 CREATE TABLE role (
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL UNIQUE
                 );
             """
-            data_base.execute(request)
+            role.data_base.execute(request)
             role.load_default_value(load_yaml, RoleTable.DEFAULT_ROLES_FILE)
         return role
