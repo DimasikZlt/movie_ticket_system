@@ -8,9 +8,9 @@ class DataBase:
         self.db_connect = sqlite3.connect(name)
         self.cur = self.db_connect.cursor()
 
-    def execute(self, sql_query: Any):
-        if isinstance(sql_query, tuple):
-            self.cur.execute(*sql_query)
+    def execute(self, sql_query: str, data_request: tuple = None):
+        if data_request:
+            self.cur.execute(sql_query, data_request)
         else:
             self.cur.execute(sql_query)
         self.db_connect.commit()
