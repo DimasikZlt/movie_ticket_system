@@ -3,7 +3,6 @@ from movie_hall_table import MovieHallTable
 from movie_table import MovieTable
 from role_table import RoleTable
 from row_table import RowTable
-from seat_table import SeatTable
 from session_table import SessionTable
 from ticket_table import TicketTable
 from user_table import UserTable
