@@ -19,8 +19,8 @@ class UserTable(Table):
         role_id, _ = super().get_by_field('role', FieldPair('name', role))
         request = """
             INSERT INTO user (first_name, last_name, login, password, role_id) VALUES(?, ?, ?, ?, ?)
-        """, (first_name, last_name, login, hash(password), role_id)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (first_name, last_name, login, password, role_id))
 
     def get_all(self, table_name: str):
         request = f"""
@@ -37,15 +37,15 @@ class UserTable(Table):
                 FROM {table_name}
                 INNER JOIN role on role.id = user.role_id
                 WHERE user.{field_pair.field_name} = ?
-            """, (field_pair.field_value,)
-            return self.data_base.select_one(request)
+            """
+            return self.data_base.select_one(request, (field_pair.field_value,))
 
     def remove(self, login):
         request = """
             DELETE FROM user
             WHERE login = ?
-        """, (login,)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (login,))
 
     def update(self, field_pair: FieldPair, filter_field_pair: FieldPair):
         if (field_pair.field_name != 'id'
@@ -55,8 +55,8 @@ class UserTable(Table):
                 UPDATE user
                 SET {field_pair.field_name} = ?
                 WHERE {filter_field_pair.field_name} = ? 
-            """, (field_pair.field_value, filter_field_pair.field_value)
-            self.data_base.execute(request)
+            """
+            self.data_base.execute(request, (field_pair.field_value, filter_field_pair.field_value))
 
     def update_user(self, login: str, role: str):
         role_id, _ = super().get_by_field('role', FieldPair('name', role))

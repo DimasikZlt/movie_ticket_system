@@ -23,8 +23,8 @@ class SessionTable(Table):
         date, time = date_time.strftime('%d.%m.%Y'), date_time.strftime('%H:%M')
         request = """
             INSERT INTO session(date, time, movie_hall_id, movie_title_id) VALUES(?, ?, ?, ?)
-        """, (date, time, movie_hall_id, movie_title_id)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (date, time, movie_hall_id, movie_title_id))
 
     def remove(self, date_time: datetime, movie_hall_name: str, movie_title: str):
         movie_title_id, *_ = super().get_by_field('movie', FieldPair('title', movie_title))
@@ -36,8 +36,8 @@ class SessionTable(Table):
             AND time = ?
             AND movie_title_id = ?
             AND movie_hall_id = ?
-        """, (date, time, movie_title_id, movie_hall_id)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (date, time, movie_title_id, movie_hall_id))
 
     def get_all(self, table_name: str):
         request = f"""
@@ -56,8 +56,8 @@ class SessionTable(Table):
                 INNER JOIN movie_hall on movie_hall.id = session.movie_hall_id
                 INNER JOIN movie on movie.id = session.movie_title_id
                 WHERE session.{field_pair.field_name} = ?
-            """, (field_pair.field_value,)
-            return self.data_base.select_one(request)
+            """
+            return self.data_base.select_one(request, (field_pair.field_value,))
 
     def get_movies(self, session_date: datetime.date):
         request = f"""
@@ -65,8 +65,8 @@ class SessionTable(Table):
             FROM movie
             INNER JOIN session ON movie.id = session.movie_title_id
             WHERE session.date = ?
-        """, (session_date,)
-        return self.data_base.select_all(request)
+        """
+        return self.data_base.select_all(request, (session_date,))
 
     def make_sessions(self):
         today = datetime.now().date()

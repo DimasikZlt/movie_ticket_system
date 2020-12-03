@@ -10,15 +10,15 @@ class RoleTable(Table):
     def add(self, name: str):
         request = """
             INSERT INTO role(name) VALUES(?)
-        """, (name,)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (name,))
 
     def remove(self, name: str):
         request = """
             DELETE FROM role
             WHERE name = ?
-        """, (name,)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (name,))
 
     def load_default_value(self, loader: Callable, users_file: str):
         roles = set(user.get('role') for user in loader(users_file) if user.get('role'))

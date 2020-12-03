@@ -13,15 +13,15 @@ class MovieHallTable(Table):
     def add(self, name: str, rows_count: int, seats_count: int):
         request = """
             INSERT INTO movie_hall(name, rows_count, seats_count) VALUES(?, ?, ?)
-        """, (name, rows_count, seats_count)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (name, rows_count, seats_count))
 
     def remove(self, name):
         request = """
             DELETE FROM movie_hall
             WHERE name = ?
-        """, (name,)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (name,))
 
     def get_all(self, table_name: str):
         request = f"""
@@ -36,8 +36,8 @@ class MovieHallTable(Table):
                 SELECT id, name, rows_count, seats_count
                 FROM {table_name}
                 WHERE movie_hall.{field_pair.field_name} = ?
-            """, (field_pair.field_value,)
-            return self.data_base.select_one(request)
+            """
+            return self.data_base.select_one(request, (field_pair.field_value,))
 
     @classmethod
     def create_table(cls):

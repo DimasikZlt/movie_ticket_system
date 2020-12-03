@@ -10,15 +10,15 @@ class GenreTable(Table):
     def add(self, name: str):
         request = """
             INSERT INTO genre(name) VALUES(?)
-        """, (name,)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (name,))
 
     def remove(self, name):
         request = """
             DELETE FROM genre
             WHERE name = ?
-        """, (name,)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (name,))
 
     def load_default_value(self, loader: Callable, movies_file: str):
         genres = set(

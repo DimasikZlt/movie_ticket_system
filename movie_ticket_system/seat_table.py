@@ -5,16 +5,16 @@ class SeatTable(Table):
     def add(self, row_id: int, seat_number: int):
         request = """
             INSERT INTO seat(row_id, seat_number) VALUES(?, ?)
-        """, (row_id, seat_number)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (row_id, seat_number))
 
     def remove(self, row_id: int, seat_number: int):
         request = """
             DELETE FROM seat
             WHERE row_id = ?
             AND seat_number = ?
-        """, (row_id, seat_number)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (row_id, seat_number))
 
     def fill_seats(self, row_id: int, seats_count: int):
         for seat_number in range(1, seats_count + 1):

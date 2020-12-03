@@ -30,5 +30,5 @@ class Table(metaclass=ABCMeta):
             SELECT *
             FROM {name}
             WHERE {field_pair.field_name} = ?
-        """, (field_pair.field_value,)
-        return self.data_base.select_one(request)
+        """
+        return self.data_base.select_one(request, (field_pair.field_value,))

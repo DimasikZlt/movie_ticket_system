@@ -1,5 +1,4 @@
 import sqlite3
-from typing import Any
 
 
 class DataBase:
@@ -15,14 +14,14 @@ class DataBase:
             self.cur.execute(sql_query)
         self.db_connect.commit()
 
-    def select_all(self, sql_query: Any):
-        if isinstance(sql_query, tuple):
-            return self.cur.execute(*sql_query).fetchall()
+    def select_all(self, sql_query: str, data_request: tuple = None) -> list:
+        if data_request:
+            return self.cur.execute(sql_query, data_request).fetchall()
         return self.cur.execute(sql_query).fetchall()
 
-    def select_one(self, sql_query: Any):
-        if isinstance(sql_query, tuple):
-            return self.cur.execute(*sql_query).fetchone()
+    def select_one(self, sql_query: str, data_request: tuple = None) -> tuple:
+        if data_request:
+            return self.cur.execute(sql_query, data_request).fetchone()
         return self.cur.execute(sql_query).fetchone()
 
     def has_table(self, table_name: str) -> bool:
@@ -31,8 +30,8 @@ class DataBase:
             FROM sqlite_master 
             WHERE type = 'table' 
             AND name = ?
-        """, (table_name,)
-        return self.cur.execute(*request).fetchone()[0]
+        """
+        return self.cur.execute(request, (table_name,)).fetchone()[0]
 
     def close(self):
         self.db_connect.close()

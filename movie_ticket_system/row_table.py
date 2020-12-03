@@ -9,8 +9,8 @@ class RowTable(SeatTable):
                     FROM row
                     WHERE movie_hall_id = ?
                     AND row_number = ?
-                """, (movie_hall_id, row_number)
-        return self.data_base.select_one(request)[0]
+                """
+        return self.data_base.select_one(request, (movie_hall_id, row_number))[0]
 
     def get_movie_hall_id(self, movie_hall: str) -> int:
         movie_hall_id, *_ = super().get_by_field('movie_hall', FieldPair('name', movie_hall))
@@ -19,16 +19,16 @@ class RowTable(SeatTable):
     def add(self, movie_hall_id: int, row_number: int):
         request = """
             INSERT INTO row(movie_hall_id, row_number) VALUES(?, ?)
-        """, (movie_hall_id, row_number)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (movie_hall_id, row_number))
 
     def remove(self, movie_hall: str, row_number: int):
         request = """
             DELETE FROM row
             WHERE movie_hall_id = ?
             AND row_number = ?
-        """, (self.get_movie_hall_id(movie_hall), row_number)
-        self.data_base.execute(request)
+        """
+        self.data_base.execute(request, (self.get_movie_hall_id(movie_hall), row_number))
 
     def fill_rows(self, seat: SeatTable):
         movie_halls = super().get_all('movie_hall')
