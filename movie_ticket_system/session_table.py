@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import random
 
 from table import Table
-from tools.field_pair_tuple import FieldPair
+from tools.helper_classes import FieldPair
 
 
 class SessionTable(Table):
@@ -48,6 +48,17 @@ class SessionTable(Table):
         """
         return self.data_base.select_all(request)
 
+    def get_sessions_by_date(self, date: datetime):
+        request = f"""
+            SELECT session.id, session.time, movie_hall.id, movie_hall.name, movie.id, movie.title
+            FROM session
+            INNER JOIN movie_hall on movie_hall.id = session.movie_hall_id
+            INNER JOIN movie on movie.id = session.movie_title_id
+            WHERE date = ?
+            ORDER BY session.time
+        """
+        return self.data_base.select_all(request, (date.strftime('%d.%m.%Y'),))
+
     def get_by_field(self, table_name: str, field_pair: FieldPair):
         if field_pair.field_name in self.movie_hall_db_fields:
             request = f"""
@@ -66,7 +77,7 @@ class SessionTable(Table):
             INNER JOIN session ON movie.id = session.movie_title_id
             WHERE session.date = ?
         """
-        return self.data_base.select_all(request, (session_date,))
+        return self.data_base.select_all(request, (session_date.strftime('%d.%m.%Y'),))
 
     def make_sessions(self):
         today = datetime.now().date()
