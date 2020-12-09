@@ -1,7 +1,7 @@
 from typing import Callable
 
 from table import Table
-from tools.field_pair_tuple import FieldPair
+from tools.helper_classes import FieldPair
 from tools.yaml_loader import load_yaml
 
 
