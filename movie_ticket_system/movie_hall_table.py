@@ -1,5 +1,5 @@
 from table import Table
-from tools.field_pair_tuple import FieldPair
+from tools.helper_classes import FieldPair
 
 
 class MovieHallTable(Table):

@@ -1,5 +1,5 @@
 from seat_table import SeatTable
-from tools.field_pair_tuple import FieldPair
+from tools.helper_classes import FieldPair
 
 
 class RowTable(SeatTable):

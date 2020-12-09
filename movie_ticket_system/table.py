@@ -1,5 +1,5 @@
 from data_base import DataBase
-from tools.field_pair_tuple import FieldPair
+from tools.helper_classes import FieldPair
 from abc import ABCMeta, abstractmethod
 
 
