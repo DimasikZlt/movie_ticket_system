@@ -15,24 +15,31 @@ class AppGui(QMainWindow, Ui_MainWindow):
         super().__init__()
         # Вызываем метод для загрузки интерфейса из класса Ui_MainWindow,
         # остальное без изменений
+        self.session_button = None
         self.setupUi(self)
         self.app_db = ApplicationDB()
         self.add_session_buttons()
-        session = self.app_db.session.get_sessions_by_date(datetime.now().date())[5]
+        session = self.app_db.session.get_sessions_by_date(datetime.now().date())[0]
         self.update_seats_buttons(Session(*session))
 
     def add_session_buttons(self):
+        btn = None
         sessions = self.app_db.session.get_sessions_by_date(datetime.now().date())
         for session in sessions:
             btn = SessionPushButton(Session(*session), self.scrollAreaWidgetContents)
             btn.clicked.connect(self.clicked_session_buttons)
             self.verticalLayout_5.addWidget(btn)
+        self.session_button = btn
 
     def clicked_session_buttons(self):
-        push_button = self.sender()
-        push_button.setStyleSheet("background-color: red")
-        self.label.setText(f"{push_button.session.movie_title} - {push_button.session.time}")
-        self.update_seats_buttons(push_button.session)
+        pressed_button = self.sender()
+        self.session_button.setStyleSheet("QPushButton { background-color: #EFF0F1; }")
+        pressed_button.setStyleSheet("QPushButton { background-color: blue; }")
+        self.session_button = pressed_button
+        self.label.setText(f"{pressed_button.session.time} "
+                           f"{pressed_button.session.movie_title} "
+                           f"Зал: {pressed_button.session.movie_hall}")
+        self.update_seats_buttons(pressed_button.session)
 
     def update_seats_buttons(self, session: Session):
         self.remove_seats_buttons()
