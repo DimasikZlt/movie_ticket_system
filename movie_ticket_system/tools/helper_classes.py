@@ -23,3 +23,4 @@ class Seat(NamedTuple):
     row_number: int
     seat_id: int
     seat_number: int
+    session_id: int
