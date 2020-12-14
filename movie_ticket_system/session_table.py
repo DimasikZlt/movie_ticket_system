@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import random
 
 from table import Table
-from tools.helper_classes import FieldPair
+from tools.helper_classes import FieldPair, Session
 
 
 class SessionTable(Table):
@@ -78,6 +78,20 @@ class SessionTable(Table):
             WHERE session.date = ?
         """
         return self.data_base.select_all(request, (session_date.strftime('%d.%m.%Y'),))
+
+    def get_all_seats(self, session: Session):
+        request = """
+            SELECT session.movie_hall_id, row.id, row.row_number, seat.id, seat.seat_number
+            FROM session
+            INNER JOIN movie_hall on session.movie_hall_id = movie_hall.id
+            INNER JOIN row on session.movie_hall_id = row.movie_hall_id
+            INNER JOIN seat on row.id = seat.row_id
+            WHERE session.movie_hall_id = ?
+            AND session.id = ?
+            AND session.time = ?
+        """
+        return self.data_base.select_all(request, (session.movie_hall_id, session.session_id,
+                                                   session.time))
 
     def make_sessions(self):
         today = datetime.now().date()
