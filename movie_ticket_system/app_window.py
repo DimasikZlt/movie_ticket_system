@@ -16,7 +16,11 @@ class AppGui(QMainWindow, Ui_MainWindow):
         # Вызываем метод для загрузки интерфейса из класса Ui_MainWindow,
         # остальное без изменений
         self.session_button = None
+        self.selected_seats = []
         self.setupUi(self)
+        self.statusbar.showMessage("Application is Ready", 3000)
+        self.pushButton_cancel.clicked.connect(self.cancel_buy)
+        self.pushButton_buy.clicked.connect(self.buy_seats)
         self.app_db = ApplicationDB()
         self.add_session_buttons()
         session = self.app_db.session.get_sessions_by_date(datetime.now().date())[0]
@@ -32,6 +36,10 @@ class AppGui(QMainWindow, Ui_MainWindow):
         self.session_button = btn
 
     def clicked_session_buttons(self):
+        if self.selected_seats:
+            self.statusbar.showMessage("Cancel selecting operation before switching to new movie "
+                                       "session")
+            return
         pressed_button = self.sender()
         self.session_button.setStyleSheet("QPushButton { background-color: #EFF0F1; }")
         pressed_button.setStyleSheet("QPushButton { background-color: blue; }")
@@ -45,6 +53,7 @@ class AppGui(QMainWindow, Ui_MainWindow):
         self.remove_seats_buttons()
         seats = self.app_db.session.get_all_seats(session)
         seat_iter = iter(seats)
+        booked_seats = self.app_db.ticket.get_booked_seats(session)
         _, _, rows, seats = self.app_db.movie_hall.get_by_field(
             'movie_hall', FieldPair('id', session.movie_hall_id)
         )
@@ -63,6 +72,7 @@ class AppGui(QMainWindow, Ui_MainWindow):
             self.gridLayout.addWidget(label, row, 0)
             for seat in range(1, seats + 1):
                 btn = SeatPushButton(Seat(*next(seat_iter)), self)
+                btn.clicked.connect(self.clicked_seats_buttons)
                 self.gridLayout.addWidget(btn, row, seat)
             label2 = QtWidgets.QLabel()
             label2.setMaximumSize(QtCore.QSize(10, 50))
@@ -83,3 +93,29 @@ class AppGui(QMainWindow, Ui_MainWindow):
             child = self.gridLayout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+
+    def clicked_seats_buttons(self):
+        pressed_button = self.sender()
+        if len(self.selected_seats) < 5:
+            self.selected_seats.append(pressed_button)
+            pressed_button.setStyleSheet("QPushButton { background-color: green; }")
+        else:
+            self.statusbar.showMessage("Selected too many seats!")
+
+    def cancel_buy(self):
+        for seat_btn in self.selected_seats:
+            seat_btn.setStyleSheet("QPushButton { background-color: #EFF0F1; }")
+        self.selected_seats.clear()
+        self.statusbar.showMessage("")
+
+    def buy_seats(self):
+        for seat_btn in self.selected_seats:
+            self.app_db.ticket.add(seat_btn.seat)
+        self.selected_seats.clear()
+        self.statusbar.showMessage("")
+
+
+
+
+
+
