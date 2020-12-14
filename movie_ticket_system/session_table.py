@@ -81,7 +81,8 @@ class SessionTable(Table):
 
     def get_all_seats(self, session: Session):
         request = """
-            SELECT session.movie_hall_id, row.id, row.row_number, seat.id, seat.seat_number
+            SELECT session.movie_hall_id, row.id, row.row_number, seat.id,
+              seat.seat_number, session.id
             FROM session
             INNER JOIN movie_hall on session.movie_hall_id = movie_hall.id
             INNER JOIN row on session.movie_hall_id = row.movie_hall_id
