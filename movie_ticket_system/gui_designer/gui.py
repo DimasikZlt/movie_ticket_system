@@ -10,9 +10,6 @@ from datetime import datetime
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from add_seats_buttons import add_seats_buttons
-from tools.helper_classes import Session
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -44,7 +41,6 @@ class Ui_MainWindow(object):
         # self.session_btn = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
         # self.session_btn.setObjectName("session_btn")
         # self.verticalLayout_5.addWidget(self.session_btn)
-        # add_session_buttons(MainWindow)
 
         self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -72,13 +68,12 @@ class Ui_MainWindow(object):
         # self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
         # spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         # self.gridLayout.addItem(spacerItem1, 0, 0, 1, 1)
-        # session = MainWindow.app_db.session.get_sessions_by_date(datetime.now().date())[5]
-        # add_seats_buttons(self.verticalLayout_4, Session(*session))
 
         self.verticalLayout_4.addLayout(self.gridLayout)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding,
+                                            QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem2)
         self.pushButton_buy = QtWidgets.QPushButton(self.tab_sessions)
         self.pushButton_buy.setObjectName("pushButton_buy")
@@ -112,7 +107,8 @@ class Ui_MainWindow(object):
         self.name_genre_le.setObjectName("name_genre_le")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.name_genre_le)
         self.add_genre_btnbox = QtWidgets.QDialogButtonBox(self.add_gaenre)
-        self.add_genre_btnbox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
+        self.add_genre_btnbox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Save)
         self.add_genre_btnbox.setObjectName("add_genre_btnbox")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.add_genre_btnbox)
         self.tabWidget_2.addTab(self.add_gaenre, "")
@@ -149,7 +145,8 @@ class Ui_MainWindow(object):
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.description_film_lbl)
         self.description_film_txtedit = QtWidgets.QTextEdit(self.film_add)
         self.description_film_txtedit.setObjectName("description_film_txtedit")
-        self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.description_film_txtedit)
+        self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.FieldRole,
+                                    self.description_film_txtedit)
         self.duration_film_sbox = QtWidgets.QSpinBox(self.film_add)
         self.duration_film_sbox.setMinimum(10)
         self.duration_film_sbox.setMaximum(200)
@@ -159,7 +156,8 @@ class Ui_MainWindow(object):
         self.genre_film_cbox.setObjectName("genre_film_cbox")
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.genre_film_cbox)
         self.add_film_btnbox = QtWidgets.QDialogButtonBox(self.film_add)
-        self.add_film_btnbox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
+        self.add_film_btnbox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Save)
         self.add_film_btnbox.setObjectName("add_film_btnbox")
         self.formLayout_2.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.add_film_btnbox)
         self.tabWidget_2.addTab(self.film_add, "")
@@ -175,7 +173,8 @@ class Ui_MainWindow(object):
         self.delete_fiim_le.setObjectName("delete_fiim_le")
         self.formLayout_3.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.delete_fiim_le)
         self.delete_fiim_btnbox = QtWidgets.QDialogButtonBox(self.delete_film)
-        self.delete_fiim_btnbox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Discard)
+        self.delete_fiim_btnbox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Discard)
         self.delete_fiim_btnbox.setObjectName("delete_fiim_btnbox")
         self.formLayout_3.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.delete_fiim_btnbox)
         self.tabWidget_2.addTab(self.delete_film, "")
@@ -202,8 +201,6 @@ class Ui_MainWindow(object):
         self.tabWidget_2.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         # MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -212,17 +209,22 @@ class Ui_MainWindow(object):
         # self.seat_btn.setText(_translate("MainWindow", "PushButton"))
         self.pushButton_buy.setText(_translate("MainWindow", "Buy"))
         self.pushButton_cancel.setText(_translate("MainWindow", "Cancel"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_sessions), _translate("MainWindow", "Sessions"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_sessions),
+                                  _translate("MainWindow", "Sessions"))
         self.name_genre_lbl.setText(_translate("MainWindow", "Name"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.add_gaenre), _translate("MainWindow", "Add genre"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.add_gaenre),
+                                    _translate("MainWindow", "Add genre"))
         self.title_film_lbl.setText(_translate("MainWindow", "Title film"))
         self.year_film_lbl.setText(_translate("MainWindow", "Year"))
         self.duration_film_lbl.setText(_translate("MainWindow", "Duration"))
         self.genre_film_lbl.setText(_translate("MainWindow", "Genre"))
         self.description_film_lbl.setText(_translate("MainWindow", "Description"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.film_add), _translate("MainWindow", "Add film"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.film_add),
+                                    _translate("MainWindow", "Add film"))
         self.delete_film_lbl.setText(_translate("MainWindow", "Title film"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.delete_film), _translate("MainWindow", "Delete film"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_admin), _translate("MainWindow", "Admin"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.delete_film),
+                                    _translate("MainWindow", "Delete film"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_admin),
+                                  _translate("MainWindow", "Admin"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
