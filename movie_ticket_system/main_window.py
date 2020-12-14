@@ -3,12 +3,11 @@ from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QMenu
 
-import movie_hall_panel
 from application_db import ApplicationDB
+from movie_hall_panel import make_movie_hall_table_panel
 from seat_push_button import SeatPushButton
 from time_table_panel import make_time_table_panel
 from tools.helper_classes import Seat, FieldPair, Session
-from movie_hall_panel import make_movie_hall_table_panel
 
 
 class MainWindow(QMainWindow):
@@ -29,11 +28,15 @@ class MainWindow(QMainWindow):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.tabWidget = QtWidgets.QTabWidget()
         self.tabWidget.setObjectName("tabWidget")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.tab_session)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.sessionHorizontalLayout = QtWidgets.QHBoxLayout()
         self.sessionHorizontalLayout.setObjectName("sessionHorizontalLayout")
-        make_time_table_panel(self)
+        self.rightVerticalLayout = QtWidgets.QVBoxLayout()
+        self.rightVerticalLayout.setObjectName("rightVerticalLayout")
         ###
-        make_movie_hall_table_panel(self, Session(0, datetime.now().date(), 0, 'King', 0, "NFS"))
+        make_time_table_panel(self)
+        make_movie_hall_table_panel(self, Session(0, datetime.now().date(), 0, 'King', 0, 'NFS'))
         # _, _, rows, seats = self.app_db.movie_hall.get_by_field(
         #     'movie_hall', FieldPair('id', 1)
         # )
@@ -42,8 +45,12 @@ class MainWindow(QMainWindow):
         #         btn = SeatPushButton(Seat(1, 2, 3, 4, 5), self)
         #         self.rightVerticalLayout.addWidget(btn)
         ###
+
         self.sessionHorizontalLayout.addLayout(self.rightVerticalLayout)
-        self.sessionHorizontalLayout.setStretch(30, 70)
+        self.sessionHorizontalLayout.setStretch(0, 30)
+        self.sessionHorizontalLayout.setStretch(1, 70)
+        self.horizontalLayout_3.addLayout(self.sessionHorizontalLayout)
+
         self.tab_admin = QtWidgets.QWidget()
         self.tab_admin.setEnabled(True)
         self.tab_admin.setObjectName("tab_admin")
@@ -69,6 +76,8 @@ class MainWindow(QMainWindow):
 
         self.tabWidget.addTab(self.tab_session, "Sessions")
         self.tabWidget.addTab(self.tab_admin, "Admin")
+
+
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         self.app_db.close()
