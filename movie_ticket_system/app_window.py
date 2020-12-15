@@ -1,7 +1,8 @@
 from datetime import datetime
+from typing import List
 
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from application_db import ApplicationDB
 from gui_designer.gui import Ui_MainWindow
@@ -25,15 +26,18 @@ class AppGui(QMainWindow, Ui_MainWindow):
         self.add_session_buttons()
         session = self.app_db.session.get_sessions_by_date(datetime.now().date())[0]
         self.update_seats_buttons(Session(*session))
+        self.actionAbout.triggered.connect(self.show_about_dialog)
 
     def add_session_buttons(self):
-        btn = None
+        session_buttons = []
         sessions = self.app_db.session.get_sessions_by_date(datetime.now().date())
         for session in sessions:
             btn = SessionPushButton(Session(*session), self.scrollAreaWidgetContents)
+            session_buttons.append(btn)
             btn.clicked.connect(self.clicked_session_buttons)
             self.verticalLayout_5.addWidget(btn)
-        self.session_button = btn
+        self.session_button = session_buttons[0]
+        self.session_button.click()
 
     def clicked_session_buttons(self):
         if self.selected_seats:
@@ -72,6 +76,9 @@ class AppGui(QMainWindow, Ui_MainWindow):
             self.gridLayout.addWidget(label, row, 0)
             for seat in range(1, seats + 1):
                 btn = SeatPushButton(Seat(*next(seat_iter)), self)
+                if btn.seat in booked_seats:
+                    btn.setStyleSheet("QPushButton { background-color: red; }")
+                    btn.setEnabled(False)
                 btn.clicked.connect(self.clicked_seats_buttons)
                 self.gridLayout.addWidget(btn, row, seat)
             label2 = QtWidgets.QLabel()
@@ -101,21 +108,42 @@ class AppGui(QMainWindow, Ui_MainWindow):
             pressed_button.setStyleSheet("QPushButton { background-color: green; }")
         else:
             self.statusbar.showMessage("Selected too many seats!")
+        self.pushButton_buy.setEnabled(True)
 
     def cancel_buy(self):
         for seat_btn in self.selected_seats:
             seat_btn.setStyleSheet("QPushButton { background-color: #EFF0F1; }")
         self.selected_seats.clear()
         self.statusbar.showMessage("")
+        self.pushButton_buy.setEnabled(False)
 
     def buy_seats(self):
         for seat_btn in self.selected_seats:
             self.app_db.ticket.add(seat_btn.seat)
+        self.print_ticket(self.session_button.session, self.selected_seats)
         self.selected_seats.clear()
+        self.update_seats_buttons(self.session_button.session)
         self.statusbar.showMessage("")
+        self.pushButton_buy.setEnabled(False)
 
+    def show_about_dialog(self):
+        text = "<center>" \
+               "<h1>Movie Ticket System (MTS)</h1>" \
+               "" \
+               "</center>" \
+               "<p>Version 0.1a<br/>" \
+               "Copyleft (\u2184) DimasZlt Inc.</p>"
 
+        QMessageBox.about(self, "About", text)
 
-
-
-
+    def print_ticket(self, session: Session, seats_buttons: List[SeatPushButton]):
+        with open('../data/tickets.txt', 'a', encoding='utf-8') as ticket_file:
+            for seat_button in seats_buttons:
+                ticket = f"{'=' * 50}\n" \
+                         f"Movie title: {session.movie_title}\n" \
+                         f"Movie hall: {session.movie_hall}\n" \
+                         f"Session time: {session.time}\n" \
+                         f"Row: {seat_button.seat.row_number}\n" \
+                         f"Seat: {seat_button.seat.seat_number}\n" \
+                         f"{'=' * 50}\n"
+                ticket_file.write(ticket)
