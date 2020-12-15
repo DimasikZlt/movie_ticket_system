@@ -77,6 +77,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addItem(spacerItem2)
         self.pushButton_buy = QtWidgets.QPushButton(self.tab_sessions)
         self.pushButton_buy.setObjectName("pushButton_buy")
+        self.pushButton_buy.setEnabled(False)
         self.horizontalLayout_3.addWidget(self.pushButton_buy)
         self.pushButton_cancel = QtWidgets.QPushButton(self.tab_sessions)
         self.pushButton_cancel.setObjectName("pushButton_cancel")
