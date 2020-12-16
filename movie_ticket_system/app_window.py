@@ -12,6 +12,9 @@ from tools.helper_classes import Session, FieldPair, Seat
 
 
 class AppGui(QMainWindow, Ui_MainWindow):
+    """
+    Main GUI Application class and GUI form created by QT Designer
+    """
     def __init__(self):
         super().__init__()
         # Вызываем метод для загрузки интерфейса из класса Ui_MainWindow,
@@ -29,6 +32,9 @@ class AppGui(QMainWindow, Ui_MainWindow):
         self.actionAbout.triggered.connect(self.show_about_dialog)
 
     def add_session_buttons(self):
+        """
+        Create list of session buttons, add it to the scroll area and select the first by default
+        """
         session_buttons = []
         sessions = self.app_db.session.get_sessions_by_date(datetime.now().date())
         for session in sessions:
@@ -40,6 +46,11 @@ class AppGui(QMainWindow, Ui_MainWindow):
         self.session_button.click()
 
     def clicked_session_buttons(self):
+        """
+        Action on click a session button.
+        Switch between session by selecting different button and check if no one seat was
+        selected.
+        """
         if self.selected_seats:
             self.statusbar.showMessage("Cancel selecting operation before switching to new movie "
                                        "session")
@@ -48,8 +59,8 @@ class AppGui(QMainWindow, Ui_MainWindow):
         self.session_button.setStyleSheet("QPushButton { background-color: #EFF0F1; }")
         pressed_button.setStyleSheet("QPushButton { background-color: blue; }")
         self.session_button = pressed_button
-        self.label.setText(f"{pressed_button.session.time} "
-                           f"{pressed_button.session.movie_title} "
+        self.label.setText(f"{pressed_button.session.time} - "
+                           f"{pressed_button.session.movie_title} - "
                            f"Зал: {pressed_button.session.movie_hall}")
         self.update_seats_buttons(pressed_button.session)
 
@@ -76,6 +87,8 @@ class AppGui(QMainWindow, Ui_MainWindow):
             self.gridLayout.addWidget(label, row, 0)
             for seat in range(1, seats + 1):
                 btn = SeatPushButton(Seat(*next(seat_iter)), self)
+                btn.setToolTip(f"Row: {btn.seat.row_number}\nSeat: {btn.seat.seat_number}")
+                btn.setStyleSheet("QToolTip { background-color: #ffffca; color: #000023; }")
                 if btn.seat in booked_seats:
                     btn.setStyleSheet("QPushButton { background-color: red; }")
                     btn.setEnabled(False)
@@ -120,13 +133,16 @@ class AppGui(QMainWindow, Ui_MainWindow):
     def buy_seats(self):
         for seat_btn in self.selected_seats:
             self.app_db.ticket.add(seat_btn.seat)
-        self.print_ticket(self.session_button.session, self.selected_seats)
+        self.save_ticket(self.session_button.session, self.selected_seats)
         self.selected_seats.clear()
         self.update_seats_buttons(self.session_button.session)
         self.statusbar.showMessage("")
         self.pushButton_buy.setEnabled(False)
 
-    def show_about_dialog(self):
+    def show_about_dialog(self) -> None:
+        """
+        Show About program window by clicked Help->About menu item
+        """
         text = "<center>" \
                "<h1>Movie Ticket System (MTS)</h1>" \
                "" \
@@ -136,7 +152,12 @@ class AppGui(QMainWindow, Ui_MainWindow):
 
         QMessageBox.about(self, "About", text)
 
-    def print_ticket(self, session: Session, seats_buttons: List[SeatPushButton]):
+    def save_ticket(self, session: Session, seats_buttons: List[SeatPushButton]) -> None:
+        """
+        Create tickets from selected seats and save them to a file
+        :param session: Movie session contains Movie Hall, Time and Movie Title
+        :param seats_buttons: SeatButton contains row and seat number
+        """
         with open('../data/tickets.txt', 'a', encoding='utf-8') as ticket_file:
             for seat_button in seats_buttons:
                 ticket = f"{'=' * 50}\n" \
