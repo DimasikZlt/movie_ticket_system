@@ -12,6 +12,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
+    """
+    GUI items created by QT Designer
+    """
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1024, 768)
@@ -34,14 +37,9 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        # self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 222, 493))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
-        # self.session_btn = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-        # self.session_btn.setObjectName("session_btn")
-        # self.verticalLayout_5.addWidget(self.session_btn)
-
         self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.left_panel_vl.addWidget(self.scrollArea)
@@ -61,14 +59,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.label)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
-        # self.seat_btn = QtWidgets.QPushButton(self.tab_sessions)
-        # self.seat_btn.setObjectName("seat_btn")
-        # self.gridLayout.addWidget(self.seat_btn, 1, 0, 1, 1)
-        # spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-        # self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
-        # spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        # self.gridLayout.addItem(spacerItem1, 0, 0, 1, 1)
-
         self.verticalLayout_4.addLayout(self.gridLayout)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
