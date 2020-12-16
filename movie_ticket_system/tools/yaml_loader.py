@@ -1,7 +1,12 @@
 import yaml
 
 
-def load_yaml(file_name: str):
+def load_yaml(file_name: str) -> dict:
+    """
+    Load YAML file describes application data and return dictionary
+    :param file_name: YAML file
+    :return: Dictionary with keys and values
+    """
     with open(file_name, 'r') as file:
         try:
             movie_hall_schema = yaml.safe_load(file)
