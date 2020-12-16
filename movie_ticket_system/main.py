@@ -6,6 +6,9 @@ from app_window import AppGui
 
 
 def main():
+    """
+    Create application, main GUI window and show it on display
+    """
     app = QApplication(sys.argv)
     ex = AppGui()
     ex.show()
