@@ -1,4 +1,4 @@
-from typing import List, Tuple, Any
+from typing import Tuple, Any
 
 from data_base import DataBase
 from tools.helper_classes import FieldPair
@@ -24,7 +24,7 @@ class Table(metaclass=ABCMeta):
     def remove(self, *args, **kwargs):
         raise NotImplemented
 
-    def get_all(self, name: str) -> List[Tuple[Any]]:
+    def get_all(self, name: str):
         request = f"""
             SELECT *
             FROM {name}
