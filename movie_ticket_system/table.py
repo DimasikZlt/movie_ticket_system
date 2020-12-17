@@ -31,7 +31,7 @@ class Table(metaclass=ABCMeta):
         """
         return self.data_base.select_all(request)
 
-    def get_by_field(self, name: str, field_pair: FieldPair) -> Tuple[Any]:
+    def get_by_field(self, name: str, field_pair: FieldPair):
         request = f"""
             SELECT *
             FROM {name}
