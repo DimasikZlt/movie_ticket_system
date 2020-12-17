@@ -1,8 +1,7 @@
-from typing import Tuple, Any
+from abc import ABCMeta, abstractmethod
 
 from data_base import DataBase
 from tools.helper_classes import FieldPair
-from abc import ABCMeta, abstractmethod
 
 
 class Table(metaclass=ABCMeta):
