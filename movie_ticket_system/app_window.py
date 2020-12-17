@@ -155,7 +155,7 @@ class AppGui(QMainWindow, Ui_MainWindow):
                "<h1>Movie Ticket System (MTS)</h1>" \
                "" \
                "</center>" \
-               "<p>Version 0.1a<br/>" \
+               "<p>Version 0.2b<br/>" \
                "Copyleft (\u2184) DimasZlt Inc.</p>"
 
         QMessageBox.about(self, "About", text)
@@ -234,6 +234,7 @@ class AppGui(QMainWindow, Ui_MainWindow):
             self.app_db.movie.remove(title)
             self.fill_movie_cbox()
         else:
-            QMessageBox.information(self, 'Warning', 'Cannot remove movie because it currently '
-                                                     'used in session!',
-                                    QMessageBox.Ok)
+            QMessageBox.information(
+                self, 'Warning', 'Cannot remove movie because it currently used in session!',
+                QMessageBox.Ok
+            )
