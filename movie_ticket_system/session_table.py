@@ -95,6 +95,7 @@ class SessionTable(Table):
                                                    session.time))
 
     def make_sessions(self):
+        cleaning_time = 15
         today = datetime.now().date()
         movies = self.get_movies(today)
         if not movies:
@@ -107,7 +108,10 @@ class SessionTable(Table):
                     self.add_by_id(
                         datetime.combine(today, start_time.time()), movie_hall_id, movie_id
                     )
-                    start_time = start_time + timedelta(minutes=duration) + timedelta(minutes=15)
+                    start_time = (
+                        start_time + timedelta(minutes=duration) + timedelta(minutes=cleaning_time)
+                    )
+                    # round timeout between movies to ten minutes
                     start_time += timedelta(minutes=10 - start_time.minute % 10)
 
     @classmethod
@@ -115,14 +119,14 @@ class SessionTable(Table):
         session = cls()
         if not session.data_base.has_table('session'):
             request = """
-                CREATE TABLE session (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    date DATE NOT NULL,
-                    time TIME NOT NULL,
-                    movie_hall_id INTEGER NOT NULL REFERENCES movie_hall(id),
-                    movie_title_id INTEGER NOT NULL REFERENCES movie(id)
-                );
-            """
+                    CREATE TABLE session (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        date DATE NOT NULL,
+                        time TIME NOT NULL,
+                        movie_hall_id INTEGER NOT NULL REFERENCES movie_hall(id),
+                        movie_title_id INTEGER NOT NULL REFERENCES movie(id)
+                    );
+                """
             session.data_base.execute(request)
         session.make_sessions()
         return session
