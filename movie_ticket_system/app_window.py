@@ -15,6 +15,7 @@ class AppGui(QMainWindow, Ui_MainWindow):
     """
     Main GUI Application class and GUI form created by QT Designer
     """
+
     def __init__(self):
         super().__init__()
         # Вызываем метод для загрузки интерфейса из класса Ui_MainWindow,
@@ -30,6 +31,13 @@ class AppGui(QMainWindow, Ui_MainWindow):
         session = self.app_db.session.get_sessions_by_date(datetime.now().date())[0]
         self.update_seats_buttons(Session(*session))
         self.actionAbout.triggered.connect(self.show_about_dialog)
+        self.add_genre_btnbox.accepted.connect(self.save_genre)
+        self.add_genre_btnbox.rejected.connect(self.clear_genre_field)
+        self.add_film_btnbox.accepted.connect(self.save_movie)
+        self.add_film_btnbox.rejected.connect(self.clear_movie_field)
+        self.delete_film_btn.clicked.connect(self.delete_movie)
+        self.fill_genre_cbox()
+        self.fill_movie_cbox()
 
     def add_session_buttons(self):
         """
@@ -168,3 +176,64 @@ class AppGui(QMainWindow, Ui_MainWindow):
                          f"Seat: {seat_button.seat.seat_number}\n" \
                          f"{'=' * 50}\n"
                 ticket_file.write(ticket)
+
+    def save_genre(self):
+        new_genre = self.name_genre_le.text()
+        genres = tuple(genre[1] for genre in self.app_db.genre.get_all('genre'))
+        if new_genre.isalpha() and new_genre not in genres:
+            self.app_db.genre.add(new_genre)
+            self.statusbar.showMessage("New genre has been added successfully")
+            self.fill_genre_cbox()
+        else:
+            QMessageBox.information(self, 'Warning', 'Duplicate genre, change it!', QMessageBox.Ok)
+        self.name_genre_le.clear()
+
+    def clear_genre_field(self):
+        self.name_genre_le.clear()
+
+    def fill_genre_cbox(self):
+        self.genre_film_cbox.clear()
+        genres = tuple(genre[1] for genre in self.app_db.genre.get_all('genre'))
+        self.genre_film_cbox.addItems(genres)
+
+    def save_movie(self):
+        new_title = self.title_film_le.text()
+        movie_titles = tuple(movie[1] for movie in self.app_db.movie.get_all('movie'))
+        if new_title and new_title not in movie_titles:
+            self.app_db.movie.add(
+                new_title,
+                int(self.year_film_sbox.text()),
+                self.description_film_txtedit.toPlainText(),
+                int(self.duration_film_sbox.text()),
+                self.genre_film_cbox.currentText()
+            )
+            self.statusbar.showMessage("New movie has been added successfully")
+        else:
+            QMessageBox.information(self, 'Warning', 'Duplicate movie title, change it!',
+                                    QMessageBox.Ok)
+        self.title_film_le.clear()
+        self.description_film_txtedit.clear()
+        self.fill_movie_cbox()
+
+    def clear_movie_field(self):
+        self.title_film_le.clear()
+        self.description_film_txtedit.clear()
+
+    def fill_movie_cbox(self):
+        self.delete_movie_cbox.clear()
+        movie_titles = tuple(movie[1] for movie in self.app_db.movie.get_all('movie'))
+        self.delete_movie_cbox.addItems(movie_titles)
+
+    def delete_movie(self):
+        title = self.delete_movie_cbox.currentText()
+        movie_id, *_ = self.app_db.movie.get_by_field('movie', FieldPair('title', title))
+        movie_title_ids = [
+            session[0] for session in self.app_db.session.get_all('session')
+        ]
+        if movie_id not in movie_title_ids:
+            self.app_db.movie.remove(title)
+            self.fill_movie_cbox()
+        else:
+            QMessageBox.information(self, 'Warning', 'Cannot remove movie because it currently '
+                                                     'used in session!',
+                                    QMessageBox.Ok)
