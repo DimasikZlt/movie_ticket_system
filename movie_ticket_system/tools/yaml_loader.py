@@ -7,7 +7,7 @@ def load_yaml(file_name: str) -> dict:
     :param file_name: YAML file
     :return: Dictionary with keys and values
     """
-    with open(file_name, 'r') as file:
+    with open(file_name, 'r', encoding='utf-8') as file:
         try:
             movie_hall_schema = yaml.safe_load(file)
         except yaml.YAMLError:
